@@ -1,0 +1,7 @@
+
+*********************************************************&^
+11/25/17
+the project 4 thing up until now is the latest "finished" version.
+Now I have folder phase4_inprog_formfact where I'm trying to take a csv file that comes from dell and lists service tag numbers and form factors.  I will use that table to look up service tag numbers and from that take the corresponding form fctor from that table.
+
+I'm using this project with git
