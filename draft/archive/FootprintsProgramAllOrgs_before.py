@@ -1,7 +1,3 @@
-#instructions:
-#currently  (11/27/2017) the set up works this way:
-#
-
 #CONCERNS
 #This one works correctly
 #only concern is the sort order
@@ -20,62 +16,25 @@ import os
 import mysql.connector
 #from python_mysql_dbconfig import read_db_config
 
+#-----------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------
+# 10/05/2017
+# This program queries the KACE server
+# It queries all the databases which we use that's on it and writes the results out to 1 file
+# It makes sure that the data on that file is formatted in the column order according to the order and format desired by Footprints.
+# Then it calls a batch file which will copy the file to the footprints server.
+# Requirements for it to work:
+#   1. The batch file needs to be in the same directory as this program file.  That directory can be anywhere
 
-#finished 11/27/2107 8:40am...works good...in everything.
-
-#---------------------------------------------------------------------------
-#---------------------------------------------------------------------------
-dellTableList = []
-footprintsExportList = []
-def storeCSVAsList(fileName,outputList):
-    del outputList[:]
-    with open(fileName,'r') as f:
-        csv_f = csv.reader(f)
-        for row in csv_f:
-#            oneRowList = row[:]
-            outputList.append(row)
-
-def writeTestListToCSV(listToWrite, outputFile):
-    with open(outputFile,"w", newline = '') as csv_file2:
-        writer = csv.writer(csv_file2, delimiter=',')
-        for line in listToWrite:
-            writer.writerow(line)   
-
-#---------------------------------------------------------------------------
-#---------------------------------------------------------------------------
-#-------------------------------------------------------------------------
-# ----------------Constants and Data Structures--------------------------
-
-# column numbers of the list created from the Dell-provided csv file
-dellCompanyNameBillingColumn =   0
-dellCompanyNameShippingColumn =  1
-dellCustomerNumColumn =          2
-dellPONumColumn =                3
-dellOrderNumberColumn =          4
-dellMasterInvNumColumn =         5
-dellInvoiceNumColumn =           6
-dellGroupDescColumn =            7
-dellProductDescColumn =          8
-dellBrandDescColumn =            9
-dellItemNumColumn =              10
-dellItemLongNameColumn =         11
-dellSystemQtyColumn =            12
-dellOrderQtyColumn =             13
-dellTotalRevRetailUSDColumn =    14
-dellTotalRevDiscUSDColumn =      15
-dellFreightChargesColumn =       16
-dellSalesTaxUSDColumn =          17
-dellVatAmtLocalCurrencyColumn =  18
-dellOrderStatusDescColumn =      19
-dellOrderDateColumn =            20
-dellShipByDateColumn =           21
-dellShippedDateColumn =          22
-dellInvDateColumn =              23
-dellServiceTagsColumn =          24
+#-----------------------------------------------------------------------------------------------------
+#October 18 or so I changed the SQL so that chassis type is taken from the KACE server. and put into the "details" column
+#-----------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------
 
 
-
-
+#-----------------------------------------------
+# Constants and Data Structures
 kaceIpAddress = "10.148.1.18"
 kacePassword = 'cpl123'
 
@@ -94,11 +53,10 @@ organizationName = 0
 dbUserName = 1
 db = 2
 
-organizationFootprintsColumn = 8    #Column number where we will put organization name within the footprints csv file
-formFactorFootprintsColumn = 5      #Column with form factor...we will obtain this bylooking up the service tag number inthe dell provided csv file and looking in its form factor column
-serviceTagFootprintsColumn = 1
+organizationColumn = 8    #Column number where we will put organization name within the footprints csv file
 
 listOfOrgs = []
+
 #note that deafaultInfo stuff is not included here
 listOfOrgs.append(aelInfo)
 listOfOrgs.append(cplInfo)
@@ -200,69 +158,12 @@ for i in range(len(listOfOrgs)):
             while row is not None:
                 rowAsList.clear()
                 rowAsList = list(row)
-                rowAsList[organizationFootprintsColumn] = listOfOrgs[i][organizationName]
+                rowAsList[organizationColumn] = listOfOrgs[i][organizationName]
                 rowTuple = tuple(rowAsList)
                 writer2.writerow(rowTuple)
                 row = cursor.fetchone()
     finally:
         cnx.close()
-
-#-----------------------------------------------------------
-#-----------------------------------------------------------
-#-----------------------------------------------------------
-#This section takes the Kace SQL output and looks for the service tag number in the Dell provided table in order to get the form factor from its row of data.
-#If the service tag number in the Kace SQL output is any combination of whitespace and just 1 zero (not necessarily both) but with no other characters then it ignores it
-#If the service tag number in the Dell provided table has that same combination then it also ignores it in the program's search for the service tag number.
-#If it finds the service tag in the Dell table then it takes the form factor in that row and puts it in the corresponding cell in the Kace SQL output.
-#Finally it writes that output to a Footprints csv file.
-        
-storeCSVAsList('purchaseHistory.csv',dellTableList)
-storeCSVAsList("Footprints Export_Output.csv",footprintsExportList)
-#writeTestListToCSV(footprintsExportList,'testFootprintsFileBefore.csv')
-footprintsServiceTag = ""
-dellSericeTag = ""
-
-#debug
-foundFlag = 0
-tempList = []
-for i in range(1,len(footprintsExportList)):
-    foundFlag = 0
-    footprintsServiceTag = footprintsExportList[i][serviceTagFootprintsColumn]
-    if footprintsServiceTag.isspace() or footprintsServiceTag == "" or footprintsServiceTag == '0' or footprintsServiceTag.strip() == '0':    #ignore if only consists combination of whitespace and 1 zero
-#        footprintsExportList[i].append("nope")        #debug
-        continue
-    for j in range(1,len(dellTableList)):
-        dellServiceTag = dellTableList[j][dellServiceTagsColumn]
-        if dellServiceTag.find(",") != -1:              #this small section is for case where Dell service tag data consists of multiple service tags
-            tempList = dellServiceTag.split(',')            #make a list to iterate through the multiple service tags
-            for k in range(0,len(tempList)):
-                if not(tempList[k].isspace() or tempList[k] == "" or tempList[k] == '0' or tempList[k].strip() == '0'):     #ignore if only consists combination of whitespace and 1 zero
-                    if tempList[k].lower() == footprintsServiceTag.lower():
- #                       footprintsExportList[i].append(j)    #debug
-                        footprintsExportList[i][formFactorFootprintsColumn] = dellTableList[j][dellItemLongNameColumn]
-                        foundFlag = 1
-                        break
-                else:
-                    foundFlag = 0
-                    continue
-            if foundFlag == 1:      #after the k index for loop we still need to break out of the j index for loop
-                break
-        else:
-            if not(dellServiceTag.isspace() or dellServiceTag == "" or dellServiceTag == '0' or dellServiceTag.strip() == '0'):         #ignore if only consists combination of whitespace and 1 zero
-                if dellServiceTag.lower() == footprintsServiceTag.lower():
-                    footprintsExportList[i][formFactorFootprintsColumn] = dellTableList[j][dellItemLongNameColumn]
-                    foundFlag = 1
-                    break
-            else:
-                foundFlag = 0
-                continue
-    
-#    if foundFlag == 0:      #debug
-#       footprintsExportList[i].append("nope")  #debug
-                
-
-        
-writeTestListToCSV(footprintsExportList,'Footprints Export_Output.csv')
 
 #------------------------------------------------------------------
 #------------------------------------------------------------------
@@ -271,4 +172,3 @@ os.system('CSVFileMover.bat')
 
 #------------------------------------------------------------------
 #------------------------------------------------------------------        
-

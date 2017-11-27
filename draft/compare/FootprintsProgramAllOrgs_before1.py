@@ -1,3 +1,7 @@
+#instructions:
+#currently  (11/27/2017) the set up works this way:
+#
+
 #CONCERNS
 #This one works correctly
 #only concern is the sort order
@@ -17,11 +21,8 @@ import mysql.connector
 #from python_mysql_dbconfig import read_db_config
 
 
-#I need to make it to where it looks among all of the service tags of the dell csv.  If it has stuff with only whitespace or that combined with a zero then it will rule it out. and if there is a list separated by commas then in the for loop that does the comparing it will crate a small list there and it will compare among all fo that list...but among that list it will also rule out that space and zoer thign that is mentioned here.
-#finished 11/25/2107 8:53pm...works good...in everything.
-#all that's left now is to ADD THE BATCH FILE STUFF AND PUT
-#THEN PUT THIS SCRIPT IN THE G DRIVE ALONG WITH THE DELL CSV
-#ADD INSTRUCTIONS TO THE TOP OF THIS FILE....AND ALSO ADD SOME MORE COMMENTS
+#finished 11/27/2107 8:40am...works good...in everything.
+
 #---------------------------------------------------------------------------
 #---------------------------------------------------------------------------
 dellTableList = []
@@ -39,6 +40,11 @@ def writeTestListToCSV(listToWrite, outputFile):
         writer = csv.writer(csv_file2, delimiter=',')
         for line in listToWrite:
             writer.writerow(line)   
+
+#---------------------------------------------------------------------------
+#---------------------------------------------------------------------------
+#-------------------------------------------------------------------------
+# ----------------Constants and Data Structures--------------------------
 
 # column numbers of the list created from the Dell-provided csv file
 dellCompanyNameBillingColumn =   0
@@ -69,10 +75,7 @@ dellServiceTagsColumn =          24
 
 
 
-#---------------------------------------------------------------------------
-#---------------------------------------------------------------------------
-#-----------------------------------------------
-# Constants and Data Structures
+
 kaceIpAddress = "10.148.1.18"
 kacePassword = 'cpl123'
 
@@ -96,7 +99,6 @@ formFactorFootprintsColumn = 5      #Column with form factor...we will obtain th
 serviceTagFootprintsColumn = 1
 
 listOfOrgs = []
-
 #note that deafaultInfo stuff is not included here
 listOfOrgs.append(aelInfo)
 listOfOrgs.append(cplInfo)
@@ -206,30 +208,35 @@ for i in range(len(listOfOrgs)):
         cnx.close()
 
 #-----------------------------------------------------------
-
-
+#-----------------------------------------------------------
+#-----------------------------------------------------------
+#This section takes the Kace SQL output and looks for the service tag number in the Dell provided table in order to get the form factor from its row of data.
+#If the service tag number in the Kace SQL output is any combination of whitespace and just 1 zero (not necessarily both) but with no other characters then it ignores it
+#If the service tag number in the Dell provided table has that same combination then it also ignores it in the program's search for the service tag number.
+#If it finds the service tag in the Dell table then it takes the form factor in that row and puts it in the corresponding cell in the Kace SQL output.
+#Finally it writes that output to a Footprints csv file.
+        
 storeCSVAsList('purchaseHistory.csv',dellTableList)
 storeCSVAsList("Footprints Export_Output.csv",footprintsExportList)
-writeTestListToCSV(footprintsExportList,'testFootprintsFileBefore.csv')
+#writeTestListToCSV(footprintsExportList,'testFootprintsFileBefore.csv')
 footprintsServiceTag = ""
 dellSericeTag = ""
 
 #debug
-
 foundFlag = 0
 tempList = []
 for i in range(1,len(footprintsExportList)):
     foundFlag = 0
     footprintsServiceTag = footprintsExportList[i][serviceTagFootprintsColumn]
-    if footprintsServiceTag.isspace() or footprintsServiceTag == "" or footprintsServiceTag == '0' or footprintsServiceTag.strip() == '0':
+    if footprintsServiceTag.isspace() or footprintsServiceTag == "" or footprintsServiceTag == '0' or footprintsServiceTag.strip() == '0':    #ignore if only consists combination of whitespace and 1 zero
 #        footprintsExportList[i].append("nope")        #debug
         continue
     for j in range(1,len(dellTableList)):
         dellServiceTag = dellTableList[j][dellServiceTagsColumn]
-        if dellServiceTag.find(",") != -1:
-            tempList = dellServiceTag.split(',')
+        if dellServiceTag.find(",") != -1:              #this small section is for case where Dell service tag data consists of multiple service tags
+            tempList = dellServiceTag.split(',')            #make a list to iterate through the multiple service tags
             for k in range(0,len(tempList)):
-                if not(tempList[k].isspace() or tempList[k] == "" or tempList[k] == '0' or tempList[k].strip() == '0'):
+                if not(tempList[k].isspace() or tempList[k] == "" or tempList[k] == '0' or tempList[k].strip() == '0'):     #ignore if only consists combination of whitespace and 1 zero
                     if tempList[k].lower() == footprintsServiceTag.lower():
  #                       footprintsExportList[i].append(j)    #debug
                         footprintsExportList[i][formFactorFootprintsColumn] = dellTableList[j][dellItemLongNameColumn]
@@ -241,7 +248,7 @@ for i in range(1,len(footprintsExportList)):
             if foundFlag == 1:      #after the k index for loop we still need to break out of the j index for loop
                 break
         else:
-            if not(dellServiceTag.isspace() or dellServiceTag == "" or dellServiceTag == '0' or dellServiceTag.strip() == '0'):
+            if not(dellServiceTag.isspace() or dellServiceTag == "" or dellServiceTag == '0' or dellServiceTag.strip() == '0'):         #ignore if only consists combination of whitespace and 1 zero
                 if dellServiceTag.lower() == footprintsServiceTag.lower():
                     footprintsExportList[i][formFactorFootprintsColumn] = dellTableList[j][dellItemLongNameColumn]
                     foundFlag = 1
@@ -257,12 +264,11 @@ for i in range(1,len(footprintsExportList)):
         
 writeTestListToCSV(footprintsExportList,'Footprints Export_Output.csv')
 
+#------------------------------------------------------------------
+#------------------------------------------------------------------
+# MOVE FILE OVER
+os.system('CSVFileMover.bat')
 
-#formFactorFootprintsColumn = 5      #Column with form factor...we will obtain this bylooking up the service tag number inthe dell provided csv file and looking in its form factor column
-#assetTagFootprintsColumn = 1
-                                    
+#------------------------------------------------------------------
+#------------------------------------------------------------------        
 
-#ServiceTagsColumn =          24
-
-#s.isspace() or s == "" or s == '0'
-#s.isspace() or s == "" or s == '0' or s.strip() == '0'

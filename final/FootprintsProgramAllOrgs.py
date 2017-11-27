@@ -1,6 +1,6 @@
 #instructions:
 #currently  (11/27/2017) the set up works this way:
-#
+#(see instructions.txt located in the same directory as this program)
 
 #CONCERNS
 #This one works correctly

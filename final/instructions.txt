@@ -1,0 +1,30 @@
+The Python program queries the KACE server with SQL.
+
+Current Setup:
+Task Scheduler runs daily and it looks in \\swcausfsv02.cpllabs.com\DPIS\KACE_FOOTPRINTS to run file Python file FootprintsProgramAllOrgs.py
+The Task Scheduler runs under the cpllabs user id (cpllabs\cmdbuser) with password cpl123456!
+
+The Python script does the following:
+The Python program queries the KACE server with SQL.
+It runs the query multiple times for each "organization" in KACE.
+This is because different parts of Sonic Southwest (and other areas, such as PLI) which we query for are listed in different "databases" in the KACE system.
+The script consolidates all this data into 1 data structure.
+
+The script also looks for a Dell-provided csv file in its same directory.
+The Dell file must be named purchaseHistory.csv
+For each row in the Kace SQL output it looks for the service tag number in the Dell provided table in order to get the form factor from its row of data.
+It then puts this into "details" column of the Kace SQL output data structure.
+If it doesn't find it then it leaves it as the Kace SQL output originally had it (which would be a generic description, such as laptop or desktop, etc...)
+
+Then the script writes the data structure to a csv file in the same directory called Footprints Export_Output.csv
+
+Finally the script calls a batch file (CSVFileMover.bat) which is also in the same directory.
+It moves the footprints csv file to the footprints server.
+To be able to write to the footprints server with a batch file you will need to enter credentials of some sort.
+It is us\sitkace with password Austin123
+
+The batch file also writes to an error file in these events:
+1. mapping a temporary network drive to footprints server fails
+2. copying file to footprints server fails
+3. deleting temporary network drive to footprints server fails.
+Error file overwrites previous entries so only the previous version is seen. (may need to fix this)
