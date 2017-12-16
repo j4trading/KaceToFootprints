@@ -1,0 +1,73 @@
+***********************************************************&^
+CASES:
+1. model name matches australia list but we have no form factor
+	Answer: I think I'll just handwrite "No form factor information available"
+2. models that are not in the australia list at all (this is true for some HP models)
+***********************************************************&^
+
+
+
+***********************************************************&^
+It will have 2 parts
+Will build each of the parts.
+If it uses any of the stuff in that Australian spreadsheet then we add "Dell"
+
+I THINK I WILL MAKE THE CODE COPY DIRECTRLY FROM THE LIST THAT AUSTRALIA PROVIDES
+The reason for that is that it coudl be that someday Australia might change that format.
+Then if the model I'm searching doesn't match any models then I will just enter it into our output      myself but of course keepign with their format.
+
+for some of the Australia entries I'm not even going to check for them.
+For those I will put XXXXX1234567890
+That way that won't get put in.
+
+Also if a cell is empty then we only check up to the cell before that
+***********************************************************&^
+
+
+
+
+***********************************************************&^
+For the higher level writing of the code:
+I t hink I'll keep it the way it is now. 
+I will just wirte another function which will reshape what is urrently the final of phase "phase4_formfact_git_done"
+
+***********************************************************&^
+
+
+
+
+
+
+
+
+
+
+
+
+***********************************************************&^
+SCRATCH SHEET PART:
+
+If it has either of 3020,9020,3040 that is in australia list then we put in a variable
+And it has Optiflex then we 
+
+Create a list of lists
+1 column all the stuff in australia table.
+On the next columns put the keywords that would be necessary to identify it as that entry
+	the relationship among those necessary columns is an AND relationship (in other words they need to ALL be true for qualification.
+	But within each column there is an OR relationship.  Inside each column there will be a list or tuple of stuff that will have an OR relationship.
+
+Also for our output list the code needs to run through the whole Australia list and not just stop at the first match so that it can match the one it has most "hits" with
+This is to differentiate between these 2 entries in the Australia table:
+Dell OptiPlex 3010
+Dell OptiPlex 3010 SFF
+
+Make sure that it's an exact match (case insensitive)...make sure it ignores spaces only before and after
+***********************************************************&^
+
+
+CHANGE OF PLANS:
+12/16/2017
+I will use the make column in the footprints extract as it is now and use it to compare it to a table to that asociates it to the way Australia wants it.
+
+12/16/2017
+Sowe want to look and see if something exists in the vendor column.  If it does then take what's in the DESKTOP MODEL column into a variable.  Then search in our table that associates Australia make names to a tuple make names that could be found in our Footprints/Kace extracts.  Then in that variable substitue the Footprints/Kace extract make name with that of the Australia.  Make sure that in that code that you search last for the subsuming possibvility.  So first search for Dell and then search for Dell Inc.

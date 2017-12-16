@@ -1,6 +1,6 @@
 #instructions:
 #currently  (11/27/2017) the set up works this way:
-#(see instructions.txt located in the same directory as this program)
+#
 
 #CONCERNS
 #This one works correctly
@@ -8,18 +8,6 @@
 #also expiration or active column includes No warranty data
 #also moves file to footprints server
 
-#To Do:
-#todo:
-#Think of finding out something in Kace that to get a list of all of the available databases...maybe emailthe Kace guy.
-# I also added some other databases as they appear to have been added in....I will ask which of these need to stay
-#the following org11 and org12 passwords don't seem to work...not 100% sure if it was the pasword...i can check...but I think that's what it wsa.
-    #cblPathInfo = ("CBLPath",'R10','ORG10')
-    #escLabInfo = ("ESCLab",'R11','ORG11')
-    #smlInfo = ("SML",'R12','ORG12')    
-
-#Important notes:
-# 12/16/2017: I removed the database SonicCorpSOEInfo from consideration as it appears to have been taken out of Kace
-# I also added some other databases as they appear to have been added in....I will ask which of these need to stay
 import csv
 import datetime
 import time
@@ -52,8 +40,6 @@ def writeTestListToCSV(listToWrite, outputFile):
         writer = csv.writer(csv_file2, delimiter=',')
         for line in listToWrite:
             writer.writerow(line)   
-
-#def 
 
 #---------------------------------------------------------------------------
 #---------------------------------------------------------------------------
@@ -101,22 +87,16 @@ checkInInfo = ("Check-In",'R5','ORG5')
 pliInfo = ("PLI", 'R6', 'ORG6')
 palInfo = ("PAL", 'R7', 'ORG7')
 srlInfo = ("SRL", 'R8', 'ORG8')
-sonicCorpSoeInfo = ("Sonic Corp SOE", 'R9', 'ORG9') #....#12/16/2017...this appears to have been taken out of Kace...I will not append to the list
-cblPathInfo = ("CBLPath",'R10','ORG10')
-escLabInfo = ("ESCLab",'R11','ORG11')
-smlInfo = ("SML",'R12','ORG12')
+sonicCorpSoeInfo = ("Sonic Corp SOE", 'R9', 'ORG9')
 
 #Tuple element indices
 organizationName = 0
 dbUserName = 1
 db = 2
 
-serviceTagFootprintsColumn = 1
-desktopModelFootprintsColumn = 3
-formFactorFootprintsColumn = 5      #Column with form factor...we will obtain this bylooking up the service tag number inthe dell provided csv file and looking in its form factor column
 organizationFootprintsColumn = 8    #Column number where we will put organization name within the footprints csv file
-
-
+formFactorFootprintsColumn = 5      #Column with form factor...we will obtain this bylooking up the service tag number inthe dell provided csv file and looking in its form factor column
+serviceTagFootprintsColumn = 1
 
 listOfOrgs = []
 #note that deafaultInfo stuff is not included here
@@ -127,11 +107,7 @@ listOfOrgs.append(checkInInfo)
 listOfOrgs.append(pliInfo)
 listOfOrgs.append(palInfo)
 listOfOrgs.append(srlInfo)
-#listOfOrgs.append(sonicCorpSoeInfo)  #12/16/2017...this appears to have been taken out of Kace...I will not append to the list
-#listOfOrgs.append(cblPathInfo)
-#listOfOrgs.append(escLabInfo)
-#listOfOrgs.append(smlInfo)
-
+listOfOrgs.append(sonicCorpSoeInfo)
 
 headerTuple = ('Asset #','Serial Number','Vendor','Desktop Model','Location','Details','IP Address','Operating System','Configuration ID','Invoice Date','Warranty Expiry Date','Warranty Expired','PO #','Invoice #','Cost Centre','Purchase Price','Purchasing Approved','Status')
 
@@ -207,9 +183,9 @@ stotaltemp = stemp1+stemp2+stemp3+stemp4+stemp5+stemp6+stemp6b+stemp8+stemp9+ste
 with open('Footprints Export_Output.csv', "w", newline = '') as csv_file:  #debug
 	writer2 = csv.writer(csv_file, delimiter=',')  #debug
 	writer2.writerow(headerTuple)
-
+	
 for i in range(len(listOfOrgs)):
-    print(listOfOrgs[i]) #debug	
+    print(listOfOrgs[i]) #debug
     try:
         cnx = mysql.connector.connect(user=listOfOrgs[i][dbUserName], password = kacePassword,
                                     host=kaceIpAddress
@@ -282,13 +258,8 @@ for i in range(1,len(footprintsExportList)):
                 foundFlag = 0
                 continue
     
-    if foundFlag == 0:                  #if the Dell provided spreadsheet doesn't have the form factor information then we will use desktop model that is already in our footprints spreadsheet.
-                                        # the reason is that in that case we will have something too generic looking in our footprints form factor column (right now this column is titled "Details")
-       footprintsExportList[i].append("nope")
-       footprintsExportList[i][formFactorFootprintsColumn] = footprintsExportList[i][desktopModelFootprintsColumn]
-
-        
-                
+#    if foundFlag == 0:      #debug
+#       footprintsExportList[i].append("nope")  #debug
                 
 
         

@@ -1,3 +1,6 @@
+#safekeeping notes:
+#aLl idid for this phase is added some organizations and took out the ones that noe longer work due to pasword issues.
+
 #instructions:
 #currently  (11/27/2017) the set up works this way:
 #(see instructions.txt located in the same directory as this program)

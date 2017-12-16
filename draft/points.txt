@@ -1,7 +1,11 @@
-
 *********************************************************&^
-11/25/17
-the project 4 thing up until now is the latest "finished" version.
-Now I have folder phase4_inprog_formfact where I'm trying to take a csv file that comes from dell and lists service tag numbers and form factors.  I will use that table to look up service tag numbers and from that take the corresponding form fctor from that table.
+12/14/2017
+new request
+They want to meld the model and form factor columns into one column.
+Also they want the form factor portion of that to be in a certain format as outline in the file CMDB Models_20171214.xlsx
+Not quite sure how to proceed on that just yet nor what is requested exactly.
 
-I'm using this project with git
+
+#Important notes:
+# 12/16/2017: I removed the database SonicCorpSOEInfo from consideration as it appears to have been taken out of Kace
+# I also added some other databases as they appear to have been added in....I will ask which of these need to stay
