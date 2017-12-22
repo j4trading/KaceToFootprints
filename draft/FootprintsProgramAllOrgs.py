@@ -53,7 +53,23 @@ def writeTestListToCSV(listToWrite, outputFile):
         for line in listToWrite:
             writer.writerow(line)   
 
-#def 
+def processModelName():
+    #abc123
+    vendorName = ""
+    somethingInVendorColumnFlag = 0
+    for i in range(0,len(footprintsExportList)):
+
+        if len(footprintsExportList[i][vendorFootprintsColumn]) != 0:
+            vendorName = footprintsExportList[i][vendorFootprintsColumn]
+            
+#        else theres nothing in the vendor column then:
+#            the do nothing
+
+        if somethingInVendorColumnFlag == 1:
+            for j in range(0,len(vendorTuple)):
+                for k in range(0,len(vendorTuple(j))):
+                    i=1
+                    i+=1
 
 #---------------------------------------------------------------------------
 #---------------------------------------------------------------------------
@@ -111,7 +127,10 @@ organizationName = 0
 dbUserName = 1
 db = 2
 
+#Footprints Exports Spreadsheet Column Numbers
+assetNumberFootprintsColumn = 0
 serviceTagFootprintsColumn = 1
+vendorFootprintsColumn = 2
 desktopModelFootprintsColumn = 3
 formFactorFootprintsColumn = 5      #Column with form factor...we will obtain this bylooking up the service tag number inthe dell provided csv file and looking in its form factor column
 organizationFootprintsColumn = 8    #Column number where we will put organization name within the footprints csv file
@@ -136,6 +155,30 @@ listOfOrgs.append(srlInfo)
 headerTuple = ('Asset #','Serial Number','Vendor','Desktop Model','Location','Details','IP Address','Operating System','Configuration ID','Invoice Date','Warranty Expiry Date','Warranty Expired','PO #','Invoice #','Cost Centre','Purchase Price','Purchasing Approved','Status')
 
 #--------------------------------------------------------------
+#Australia-formatted Names of vendors:
+vendorTuple = (
+("Dell","Dell Inc.","Dell"), 
+("HP","Hewlett-Packard","Hewlett Packard","HP"), 
+("Innotek","innotek","Innotek"), 
+("Lenovo","LENOVO"), 
+("Microsoft","Microsoft Corporation","Microsoft"), 
+("Touch Dynamic","Touch Dynamic Inc.","Touch Dynamic"), 
+("Vmware","VMware"," Inc.","Vmware"), 
+("Apple","Apple"), 
+("IBM","IBM"), 
+("Samsung","Samsung"), 
+("Wacom","Wacom"), 
+("Acer","Acer"), 
+("Micro-Star","Micro-Star","Micro-Star International"), 
+("MSI","MSI"), 
+("Sony","Sony"), 
+("Toshiba","Toshiba"), 
+("Barracuda","Barracude","Barracuda"), 
+("BlueCoat","BlueCoat"), 
+
+)
+
+
 #--------------------------------------------------------------
 #--------------------------------------------------------------
 #--------------------------------------------------------------
@@ -284,14 +327,9 @@ for i in range(1,len(footprintsExportList)):
     
     if foundFlag == 0:                  #if the Dell provided spreadsheet doesn't have the form factor information then we will use desktop model that is already in our footprints spreadsheet.
                                         # the reason is that in that case we will have something too generic looking in our footprints form factor column (right now this column is titled "Details")
-       footprintsExportList[i].append("nope")
        footprintsExportList[i][formFactorFootprintsColumn] = footprintsExportList[i][desktopModelFootprintsColumn]
 
-        
-                
-                
 
-        
 writeTestListToCSV(footprintsExportList,'Footprints Export_Output.csv')
 
 #------------------------------------------------------------------

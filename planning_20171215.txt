@@ -71,3 +71,40 @@ I will use the make column in the footprints extract as it is now and use it to 
 
 12/16/2017
 Sowe want to look and see if something exists in the vendor column.  If it does then take what's in the DESKTOP MODEL column into a variable.  Then search in our table that associates Australia make names to a tuple make names that could be found in our Footprints/Kace extracts.  Then in that variable substitue the Footprints/Kace extract make name with that of the Australia.  Make sure that in that code that you search last for the subsuming possibvility.  So first search for Dell and then search for Dell Inc.
+
+***********************************&^
+1. vendor column has something......details doesn't
+2. vendor column has something......details does
+
+3. vendor  column has nothing.......details does
+4. vendor  column has nothing.......details don't
+5. vendor  column has something that we didn't account for in our table...and that name is somewhere in the details column
+6. vendor  column has something that we didnt' account for in our table...and that name is nowhere in the details column
+
+1. we just add it in		tno know this we'd search for it
+2. we'd search for it and replaced
+3. we'd search for it as in the other procedure and replaced it
+4. we'd search for it and replace it
+5. we put whatevere is in the vendor column
+6. we put whatever is in the vendor column...but only if the exact same thing is not in the beginning of the details column
+
+vendor column takes precedence
+A. to do: check if vendor column has something...if it does then we use it and 
+	search in wht is in form factor to replace it.
+
+if vendor doesn't have anything, then we search for those texts in details column
+	like we did in vendor column
+
+*******************************&^
+
+
+#Footprints Exports Spreadsheet Column Numbers
+assetNumberFootprintsColumn = 0
+serviceTagFootprintsColumn = 1
+vendorFootprintsColumn = 2
+desktopModelFootprintsColumn = 3
+formFactorFootprintsColumn = 5      #Column with form factor...we will obtain this bylooking up the service tag number inthe dell provided csv file and looking in its form factor column
+organizationFootprintsColumn = 8    #Column number where we will put organization name within the footprints csv file
+
+
+******************************************************&^
