@@ -1,3 +1,5 @@
+import re
+
 string1 = "abcd ecd cd f"
 string2 = "cd"
 spos = string1.find(string2)
@@ -100,9 +102,9 @@ stringToReplace = ' def '
 stringToReplaceList =  [
 'abc 123', 'abc123', '123abc', '123 abc', '123 abc 123',
 '123abc 123', '123 abc123', '123abc123', '123abc', '123',
-'abc', '',  ' ', ' def', 'def ', ' def ']
+'abc', '',  ' ', ' def', 'def ', ' Def ']
 
-stringToUseList = ['abc 123','abc123', '123abc']
+stringToUseList = ['abc 123','abc123', '123aBc']
 
 footprintsExportList = [
 [1, '987',101],
@@ -121,7 +123,7 @@ footprintsExportList = [
 [14, ' ',114],
 [15, ' def',115],
 [16, 'def ',116],
-[17, ' def ',117],
+[17, ' deF ',117],
 ]
 
 footprintsExportListCopy = [
@@ -141,7 +143,7 @@ footprintsExportListCopy = [
 [14, ' ',114],
 [15, ' def',115],
 [16, 'def ',116],
-[17, ' def ',117],
+[17, ' deF ',117],
 ]
 
 formFactorFootprintsColumn = 1
@@ -177,6 +179,90 @@ def replaceVendorStrings(stringToUse, stringToReplace, footprintsListIndex):
     If stringToReplace exists in the string then it will take it out before adding in stringToUse
     It is mindful of including a space to separate it and what word woudl be after it
     If what is after it is a whitespace then it won't add a space there.
+    Regular expressions are used as it's the only way to replace strings in a case insensitive way
+    '''
+    tempString = ""
+    footprintsTemp = ""
+    if stringToReplace == "":
+        if len(footprintsExportList[footprintsListIndex][formFactorFootprintsColumn]) == 0:
+            footprintsExportList[footprintsListIndex][formFactorFootprintsColumn] = stringToUse
+        else:
+            if footprintsExportList[footprintsListIndex][formFactorFootprintsColumn][0].isspace():
+                tempString = stringToUse
+            else:
+                tempString = stringToUse + " "
+            footprintsExportList[footprintsListIndex][formFactorFootprintsColumn] = tempString + footprintsExportList[footprintsListIndex][formFactorFootprintsColumn]
+                
+    elif len(footprintsExportList[footprintsListIndex][formFactorFootprintsColumn]) == 0:
+        footprintsExportList[footprintsListIndex][formFactorFootprintsColumn] = stringToUse
+
+    else:
+        tempString = ""
+        substringPosition = footprintsExportList[footprintsListIndex][formFactorFootprintsColumn].upper().find(stringToReplace.upper())
+        if substringPosition != -1:
+            footprintsTemp = footprintsExportList[footprintsListIndex][formFactorFootprintsColumn]
+            redata = re.compile(re.escape(stringToReplace), re.IGNORECASE)
+            footprintsTemp = redata.sub('', footprintsTemp)
+            footprintsExportList[footprintsListIndex][formFactorFootprintsColumn] = footprintsTemp
+#            footprintsExportList[footprintsListIndex][formFactorFootprintsColumn] = footprintsExportList[footprintsListIndex][formFactorFootprintsColumn].replace((stringToReplace), '', 1)
+
+        if len(footprintsExportList[footprintsListIndex][formFactorFootprintsColumn]) == 0:
+            footprintsExportList[footprintsListIndex][formFactorFootprintsColumn] = stringToUse
+            tempString = ""
+        elif footprintsExportList[footprintsListIndex][formFactorFootprintsColumn][0].isspace():
+            tempString = stringToUse
+        else:
+            tempString = stringToUse + " "
+        footprintsExportList[footprintsListIndex][formFactorFootprintsColumn] = tempString + footprintsExportList[footprintsListIndex][formFactorFootprintsColumn]
+
+def replaceFFStrings(stringToUse, stringToReplace, footprintsListIndex):
+    '''
+    This function puts stringToUse  at the end of the string.
+    If stringToReplace exists in the string then it will take it out before adding in stringToUse
+    It is mindful of including a space to separate it and what word woudl be in before it
+    If what is before is a whitespace then it won't add a space there.
+    Regular expressions are used as it's the only way to replace strings in a case insensitive way
+    '''
+    tempString = ""
+    footprintsTemp = ""
+    if stringToReplace == "":
+        if len(footprintsExportList[footprintsListIndex][formFactorFootprintsColumn]) == 0:
+            footprintsExportList[footprintsListIndex][formFactorFootprintsColumn] = stringToUse
+        else:
+            if footprintsExportList[footprintsListIndex][formFactorFootprintsColumn][-1].isspace():
+                tempString = stringToUse
+            else:
+                tempString = " " + stringToUse
+            footprintsExportList[footprintsListIndex][formFactorFootprintsColumn] = footprintsExportList[footprintsListIndex][formFactorFootprintsColumn] + tempString
+                
+    elif len(footprintsExportList[footprintsListIndex][formFactorFootprintsColumn]) == 0:
+        footprintsExportList[footprintsListIndex][formFactorFootprintsColumn] = stringToUse
+
+    else:
+        tempString = ""
+        substringPosition = footprintsExportList[footprintsListIndex][formFactorFootprintsColumn].upper().find(stringToReplace.upper())
+        if substringPosition != -1:
+            footprintsTemp = footprintsExportList[footprintsListIndex][formFactorFootprintsColumn]
+            redata = re.compile(re.escape(stringToReplace), re.IGNORECASE)
+            footprintsTemp = redata.sub('', footprintsTemp)
+            footprintsExportList[footprintsListIndex][formFactorFootprintsColumn] = footprintsTemp
+#            footprintsExportList[footprintsListIndex][formFactorFootprintsColumn] = footprintsExportList[footprintsListIndex][formFactorFootprintsColumn].replace((stringToReplace), '', 1)
+
+        if len(footprintsExportList[footprintsListIndex][formFactorFootprintsColumn]) == 0:
+            footprintsExportList[footprintsListIndex][formFactorFootprintsColumn] = stringToUse
+            tempString = ""
+        elif footprintsExportList[footprintsListIndex][formFactorFootprintsColumn][-1].isspace():
+            tempString = stringToUse
+        else:
+            tempString = " " + stringToUse
+        footprintsExportList[footprintsListIndex][formFactorFootprintsColumn] = footprintsExportList[footprintsListIndex][formFactorFootprintsColumn] + tempString
+
+def replaceVendorStrings_backup(stringToUse, stringToReplace, footprintsListIndex):
+    '''
+    This function puts stringToUse  at the beginning of the string.
+    If stringToReplace exists in the string then it will take it out before adding in stringToUse
+    It is mindful of including a space to separate it and what word woudl be after it
+    If what is after it is a whitespace then it won't add a space there.
     '''
     tempString = ""
     if stringToReplace == "":
@@ -207,7 +293,7 @@ def replaceVendorStrings(stringToUse, stringToReplace, footprintsListIndex):
             tempString = stringToUse + " "
         footprintsExportList[footprintsListIndex][formFactorFootprintsColumn] = tempString + footprintsExportList[footprintsListIndex][formFactorFootprintsColumn]
 
-def replaceFFStrings(stringToUse, stringToReplace, footprintsListIndex):
+def replaceFFStrings_backup(stringToUse, stringToReplace, footprintsListIndex):
     '''
     This function puts stringToUse  at the end of the string.
     If stringToReplace exists in the string then it will take it out before adding in stringToUse
@@ -242,81 +328,7 @@ def replaceFFStrings(stringToUse, stringToReplace, footprintsListIndex):
         else:
             tempString = " " + stringToUse
         footprintsExportList[footprintsListIndex][formFactorFootprintsColumn] = footprintsExportList[footprintsListIndex][formFactorFootprintsColumn] + tempString
-
-def replaceVendorStrings_2(stringToUse, stringToReplace, footprintsListIndex):
-    '''
-    This function forsees that in the details column of the footprints output (formFactorFootprintsColumn) we want the vendor to be first
-    This function looks for stringToReplace.  If it finds it in the footprintsExportList[footprintsListIndex][formFactorFootprintsColumn] cell then it takes it out, and then places stringToUse in the beginning of thta cell.
-    It is mindful of taking out any spaces that would need to be taken out before or after it.
-    positionOfSubstringToReplace is the position within the destionaion of the stringToReplace
-    It returns a 0 if unsuccessful and a 1 if successful.
-    '''
-    substringPosition = 0
-    substringLength = 0
-    footprintsDetails = footprintsExportList[footprintsListIndex][formFactorFootprintsColumn]
-
-    '''
-    case 1: DESTINATION IS EMPTY STRING
-        TRIVIAL
-    case 1.5: details has nothing to replace
-        Nonsensical...function would not have been called in that case.  But if it were it woudl have probably been called with stringToReplace = ""
-    case 1.6: case where stringToReplace = ""...Good to handle this case in case function end user uses it as such
-    case 1.7: case where stringToUse = "".....same as case for where stringToReplace == ""
-    case 1.8: case where stringToReplace != "" but it is not found in nonempty destination cell
-    case 2: place in beginning
-    caae 2.5: details only has stringToReplace and nothing else
-    case 3: place in middle
-    case 4: place at end (not there is other stuff besides the string to replace)
-
-    First see if destination cell is empty or not...if it is then just stick stringToUSe in
-    Next look for stringToReplace.
-    Use Find function to take note if it in the beginning, middle, or end.  Also use it to store substringPosition and substringLength.
-    Decide what adjacent characters you'd also want to remove and add those to modify substringPosition and substringLength.'
-    '''
-
-    #see if details/form factor column is empty
-    #handles case 1 listed above
-
-
-    if len(footprintsExportList[footprintsListIndex][formFactorFootprintsColumn]) == 0:
-        footprintsExportList[footprintsListIndex][formFactorFootprintsColumn] = stringToUse
-        return 1
-
-
-    #handles case 1.7 listed above and thus case 1.6
-    elif len(stringToUse) == 0:
-        return 1
-
-    #because of previous "returns" this case is where both stringToReplace and stringToUse are not ""...also details/form factor column is not empty
-    elif len(stringToReplace) != 0 and len(stringToUse) != 0 and len(footprintsExportList[footprintsListIndex][formFactorFootprintsColumn]) != 0:
-        substringPosition = footprintsExportList[footprintsListIndex][formFactorFootprintsColumn].find(stringToReplace)
-        #the following handles case 1.8
-        if substringPosition == -1:
-            if footprintsExportList[footprintsListIndex][formFactorFootprintsColumn][0] == " ":
-                footprintsExportList[footprintsListIndex][formFactorFootprintsColumn] = stringToUse + " " + footprintsExportList[footprintsListIndex][formFactorFootprintsColumn]
-            else:
-                footprintsExportList[footprintsListIndex][formFactorFootprintsColumn] = stringToUse + footprintsExportList[footprintsListIndex][formFactorFootprintsColumn]
-
-        #case 2.5
-        elif substringPosition == 0 and len(footprintsDetails) == len(stringToReplace):
-            footprintsExportList[footprintsListIndex][formFactorFootprintsColumn] = stringToUse
-
-        #handles case 2
-        elif substringPosition == 0 and len(footprintsDetails) > len(stringToReplace):
-            footprintsExportList[footprintsListIndex][formFactorFootprintsColumn].replace((stringToReplace), '', 1)
-            footprintsExportList[footprintsListIndex][formFactorFootprintsColumn] = stringToReplace + footprintsExportList[footprintsListIndex][formFactorFootprintsColumn]
-
-        #handles case 4
-        elif substringPosition + len(stringToReplace) == len(footprintsDetails) and substringPosition != 0:
-            footprintsExportList[footprintsListIndex][formFactorFootprintsColumn].replace((stringToReplace), '', 1)
-            footprintsExportList[footprintsListIndex][formFactorFootprintsColumn] = footprintsExportList[footprintsListIndex][formFactorFootprintsColumn]
-
-        #handles case 3
-        elif substringPosition + len(stringToReplace) != len(footprintsDetails) and substringPosition != 0:
-            footprintsExportList[footprintsListIndex][formFactorFootprintsColumn].replace((stringToReplace), '', 1)
-            footprintsExportList[footprintsListIndex][formFactorFootprintsColumn] = footprintsExportList[footprintsListIndex][formFactorFootprintsColumn]
-            
-    return 1        
+    
                 
 
 testIt()

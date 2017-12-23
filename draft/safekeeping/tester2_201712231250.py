@@ -180,9 +180,7 @@ def processVendorHalf():
 
     for i in range(0,len(footprintsExportList)):   #main loop for entire function
         #debug
-        #print("here 3")
-#        print("vfpcolumn:",vendorFootprintsColumn)#debug
-#        print("FFfpcolumn:",formFactorFootprintsColumn)#debug
+        #print("here 3") 
 
         stringInVendorColumn = footprintsExportList[i][vendorFootprintsColumn]
         stringInDetailsColumn = footprintsExportList[i][formFactorFootprintsColumn]
@@ -190,22 +188,14 @@ def processVendorHalf():
         #print(stringInDetailsColumn) #debug
 
         #Set emptiness variable
-        #print("vfpcolumn:",stringInVendorColumn)#debug
-        #print("FFfpcolumn:",stringInDetailsColumn)#debug
         if footprintsExportList[i][vendorFootprintsColumn] == "":
-#            print("vendorempty")#debug
             vendorColumnNotEmpty = 0
-        else:
-            vendorColumnNotEmpty = 1
         if footprintsExportList[i][formFactorFootprintsColumn] == "":
-#            print("ffempty")#debug
             ffColumnNotEmpty = 0
-        else:
-            ffColumnNotEmpty = 1
 
         #see if vendor column contains anything in the vendor list and set appropriate variables accordingly
         if vendorColumnNotEmpty != 0:
-#            print("a1")#debug
+            print("a1")#debug
             for j in range(0,len(vendorList)):
                 for k in range(0,len(vendorList[j])):
                     substringPosition = stringInVendorColumn.lower().find(vendorList[j][k].lower())
@@ -213,13 +203,13 @@ def processVendorHalf():
                         vendorCFoundInList = 1
                         vendorInListOuterIndex = j
                         vendorInListInnerIndex = k
-#                        print("a3")#debug
+                        print("a3")#debug
                         break
                 if substringPosition != -1:
                     break
         #see if details contains anything in the vendor list
         if ffColumnNotEmpty != 0:
-#            print("a2")#debug
+            print("a2")#debug
             for j in range(0,len(vendorList)):
                 for k in range(0,len(vendorList[j])):
                     substringPosition = stringInDetailsColumn.lower().find(vendorList[j][k].lower())
@@ -227,44 +217,44 @@ def processVendorHalf():
                         ffCFoundInList = 1
                         ffInListOuterIndex = j
                         ffInListInnerIndex = k
-#                        print("a4")#debug
+                        print("a4")#debug
                         break
                 if substringPosition != -1:
                     break
 
         if vendorColumnNotEmpty == 0 and ffColumnNotEmpty == 0:
-#            print("a5")#debug
+            print("a5")#debug
             pass        #do nothing....we need to exit the function
 
         elif vendorColumnNotEmpty ==0 and ffColumnNotEmpty != 0:
             if ffCFoundInList == 0:
-#                print("a6")#debug
+                print("a6")#debug
                 pass    #do nothing....we need to exit the function
             else:
                 replaceVendorStrings(vendorApprovedList[ffInListOuterIndex], vendorList[ffInListOuterIndex][ffInListInnerIndex], i)
-#                print("a7")#debug
+                print("a7")#debug
 
         elif vendorColumnNotEmpty !=0 and ffColumnNotEmpty == 0:
             if vendorCFoundInList == 0:
                 footprintsExportList[i][formFactorFootprintsColumn] = stringInVendorColumn
-#                print("I made it here 1") #debug
+                print("I made it here 1") #debug
             else:
                 footprintsExportList[i][formFactorFootprintsColumn] = vendorApprovedList[vendorInListOuterIndex]
-#                print("here 5") #debug
+                print("here 5") #debug
 
     
         elif vendorColumnNotEmpty !=0 and ffColumnNotEmpty != 0:
             if vendorCFoundInList == 0 and ffCFoundInList == 0:
-#                print("a8")#debug
+                print("a8")#debug
                 pass    #do nothing...we need to exit the function
             elif vendorCFoundInList != 0 and ffCFoundInList == 0:
-#                print("a9")#debug
+                print("a9")#debug
                 replaceVendorStrings(vendorApprovedList[vendorInListOuterIndex], "", i)
             elif vendorCFoundInList == 0 and ffCFoundInList != 0:
-#                print("a10")#debug
+                print("a10")#debug
                 replaceVendorStrings(vendorApprovedList[ffInListOuterIndex], vendorList[ffInListOuterIndex][ffInListInnerIndex], i)
             elif vendorCFoundInList != 0 and ffCFoundInList != 0:
-#                print("a11")#debug
+                print("a11")#debug
                 replaceVendorStrings(vendorApprovedList[vendorInListOuterIndex], vendorList[ffInListOuterIndex][ffInListInnerIndex], i)
 
 #///////////////////////////////////////////////////////////////////////////
