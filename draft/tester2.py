@@ -305,7 +305,10 @@ def replaceVendorStrings(stringToUse, strintToReplace, footprintsListIndex):
         substringPosition = footprintsExportList[footprintsListIndex][formFactorFootprintsColumn].find(strintToReplace)
         #the following handles case 1.8
         if substringPosition == -1:
-            footprintsExportList[footprintsListIndex][formFactorFootprintsColumn] = stringToUse + " " + footprintsExportList[footprintsListIndex][formFactorFootprintsColumn]
+            if footprintsExportList[footprintsListIndex][formFactorFootprintsColumn][0] == " ":
+                footprintsExportList[footprintsListIndex][formFactorFootprintsColumn] = stringToUse + " " + footprintsExportList[footprintsListIndex][formFactorFootprintsColumn]
+            else:
+                footprintsExportList[footprintsListIndex][formFactorFootprintsColumn] = stringToUse + footprintsExportList[footprintsListIndex][formFactorFootprintsColumn]
 
         #case 2.5
         elif substringPosition == 0 and len(footprintsDetails) == len(stringToReplace):
