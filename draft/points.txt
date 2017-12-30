@@ -9,3 +9,17 @@ Not quite sure how to proceed on that just yet nor what is requested exactly.
 #Important notes:
 # 12/16/2017: I removed the database SonicCorpSOEInfo from consideration as it appears to have been taken out of Kace
 # I also added some other databases as they appear to have been added in....I will ask which of these need to stay
+
+*********************************************************&^
+12/29/2017
+I kept getting this error when runnign the program using the batch file bat file:
+"Multiple connections to a server or shared resource by the same user, using more than one user name, are not allowed. Disconnect all previous connections to the server or shared resource and try again"
+I tried creating a net connection with:
+net use \\ussighnynt12.us.int.sonichealthcare\imports /user:us\sitkace Austin123
+I'd get that error. this was even when I did this:
+net use \\ussighnynt12.us.int.sonichealthcare\imports /delete /y
+
+So I went to the swcausfsv02 server and did "net use \\ussighnynt12.us.int.sonichealthcare\imports /delete /y" there and it fixed it.
+So I added net use \\ussighnynt12.us.int.sonichealthcare\imports /delete /y at the beginning of the batch file to delete any connections there in case.
+So I added the delete line at the beginning of the batch file as well
+*********************************************************&^
