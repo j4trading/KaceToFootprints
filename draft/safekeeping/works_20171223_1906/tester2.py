@@ -162,9 +162,9 @@ def processModelNameColumn():
                 else:
                     pass
 '''
-
 #///////////////////////////////////////////////////////////////////////////
 def processVendorHalf():
+    print("here 2") #debug
     vendorColumnNotEmpty = 0
     ffColumnNotEmpty = 0
     vendorCFoundInList = 0
@@ -177,28 +177,35 @@ def processVendorHalf():
     stringInVendorColumn = ""
     stringInDetailsColumn = ""
 
-    #we want to sort vendorList because for each entry in the vendorList we want to compare with progressively larger strings.
-    #The reason is that if Dell Inc. exists in the footprints extract..we want ot replace that and not Dell.
-    for index1 in range(0,len(vendorList)):
-        vendorList[index1] = sorted(vendorList[index1], key=lambda zz: len(zz), reverse=True)
 
     for i in range(0,len(footprintsExportList)):   #main loop for entire function
+        #debug
+        #print("here 3")
+#        print("vfpcolumn:",vendorFootprintsColumn)#debug
+#        print("FFfpcolumn:",formFactorFootprintsColumn)#debug
+
         stringInVendorColumn = footprintsExportList[i][vendorFootprintsColumn]
         stringInDetailsColumn = footprintsExportList[i][formFactorFootprintsColumn]
+        #print(stringInVendorColumn) #debug
+        #print(stringInDetailsColumn) #debug
 
         #Set emptiness variable
-
+        #print("vfpcolumn:",stringInVendorColumn)#debug
+        #print("FFfpcolumn:",stringInDetailsColumn)#debug
         if footprintsExportList[i][vendorFootprintsColumn] == "":
+#            print("vendorempty")#debug
             vendorColumnNotEmpty = 0
         else:
             vendorColumnNotEmpty = 1
         if footprintsExportList[i][formFactorFootprintsColumn] == "":
+#            print("ffempty")#debug
             ffColumnNotEmpty = 0
         else:
             ffColumnNotEmpty = 1
 
         #see if vendor column contains anything in the vendor list and set appropriate variables accordingly
         if vendorColumnNotEmpty != 0:
+#            print("a1")#debug
             for j in range(0,len(vendorList)):
                 for k in range(0,len(vendorList[j])):
                     substringPosition = stringInVendorColumn.lower().find(vendorList[j][k].lower())
@@ -206,11 +213,13 @@ def processVendorHalf():
                         vendorCFoundInList = 1
                         vendorInListOuterIndex = j
                         vendorInListInnerIndex = k
+#                        print("a3")#debug
                         break
                 if substringPosition != -1:
                     break
         #see if details contains anything in the vendor list
         if ffColumnNotEmpty != 0:
+#            print("a2")#debug
             for j in range(0,len(vendorList)):
                 for k in range(0,len(vendorList[j])):
                     substringPosition = stringInDetailsColumn.lower().find(vendorList[j][k].lower())
@@ -218,78 +227,45 @@ def processVendorHalf():
                         ffCFoundInList = 1
                         ffInListOuterIndex = j
                         ffInListInnerIndex = k
+#                        print("a4")#debug
                         break
                 if substringPosition != -1:
                     break
 
         if vendorColumnNotEmpty == 0 and ffColumnNotEmpty == 0:
+#            print("a5")#debug
             pass        #do nothing....we need to exit the function
 
         elif vendorColumnNotEmpty ==0 and ffColumnNotEmpty != 0:
             if ffCFoundInList == 0:
+#                print("a6")#debug
                 pass    #do nothing....we need to exit the function
             else:
                 replaceVendorStrings(vendorApprovedList[ffInListOuterIndex], vendorList[ffInListOuterIndex][ffInListInnerIndex], i)
+#                print("a7")#debug
 
         elif vendorColumnNotEmpty !=0 and ffColumnNotEmpty == 0:
             if vendorCFoundInList == 0:
                 footprintsExportList[i][formFactorFootprintsColumn] = stringInVendorColumn
+#                print("I made it here 1") #debug
             else:
                 footprintsExportList[i][formFactorFootprintsColumn] = vendorApprovedList[vendorInListOuterIndex]
+#                print("here 5") #debug
+
     
         elif vendorColumnNotEmpty !=0 and ffColumnNotEmpty != 0:
             if vendorCFoundInList == 0 and ffCFoundInList == 0:
+#                print("a8")#debug
                 pass    #do nothing...we need to exit the function
             elif vendorCFoundInList != 0 and ffCFoundInList == 0:
+#                print("a9")#debug
                 replaceVendorStrings(vendorApprovedList[vendorInListOuterIndex], "", i)
             elif vendorCFoundInList == 0 and ffCFoundInList != 0:
+#                print("a10")#debug
                 replaceVendorStrings(vendorApprovedList[ffInListOuterIndex], vendorList[ffInListOuterIndex][ffInListInnerIndex], i)
             elif vendorCFoundInList != 0 and ffCFoundInList != 0:
+#                print("a11")#debug
                 replaceVendorStrings(vendorApprovedList[vendorInListOuterIndex], vendorList[ffInListOuterIndex][ffInListInnerIndex], i)
-
-
-#///////////////////////////////////////////////////////////////////////////
-def processFFHalf():
-    ffColumnNotEmpty = 0
-    ffCFoundInList = 0
-    ffInListOuterIndex = 0
-    ffInListInnerIndex = 0    
-    substringPositiont = -1
-    stringInDetailsColumn = ""
-
-    #we want to sort ffList because for each entry in the ffList we want to compare with progressively larger strings.
-    #The reason is that if Dell Inc. exists in the footprints extract..we want ot replace that and not Dell.
-    for index1 in range(0,len(ffList)):
-        ffList[index1] = sorted(ffList[index1], key=lambda zz: len(zz), reverse=True)
-
-    for i in range(0,len(footprintsExportList)):   #main loop for entire function
-        stringInDetailsColumn = footprintsExportList[i][formFactorFootprintsColumn]
-
-        #If nothing in details/form factor column do nothing
-        if footprintsExportList[i][formFactorFootprintsColumn] == "":
-            pass            #do nothing
-
-        else:
-            #Check if something in details/form factor column found in ffList...if it is then place approved list's version in colum
-            #if not...then leave alone
-            for j in range(0,len(ffList)):
-                for k in range(0,len(ffList[j])):
-                    substringPosition = stringInDetailsColumn.lower().find(ffList[j][k].lower())
-                    if substringPosition != -1:
-                        ffCFoundInList = 1
-                        ffInListOuterIndex = j
-                        ffInListInnerIndex = k
-                        break
-                    else:
-                        ffCFoundInList = 0
-                        
-                if substringPosition != -1:
-                    break
-
-            if ffCFoundInList == 0:
-                pass  #do nothing
-            else:
-                replaceFFStrings(ffApprovedList[ffInListOuterIndex],ffList[ffInListOuterIndex][ffInListInnerIndex],i)
 
 #///////////////////////////////////////////////////////////////////////////
 def replaceVendorStrings(stringToUse, stringToReplace, footprintsListIndex):
@@ -300,6 +276,7 @@ def replaceVendorStrings(stringToUse, stringToReplace, footprintsListIndex):
     If what is after it is a whitespace then it won't add a space there.
     Regular expressions are used as it's the only way to replace strings in a case insensitive way
     '''
+#    print(footprintsListIndex) #debug
     tempString = ""
     footprintsTemp = ""
     if stringToReplace == "":
@@ -538,7 +515,7 @@ vendorList =[
 ["Barracude","Barracuda"],
 ["BlueCoat"]
 ]
-#we want to sort vendorList because for each entry in the vendorList we want to compare with progressively larger strings.
+#we want to sort these because for each entry in the vendorList we want to compare with progressively larger strings.
 #The reason is that if Dell Inc. exists in the footprints extract..we want ot replace that and not Dell.
 for index1 in range(0,len(vendorList)):
     vendorList[index1] = sorted(vendorList[index1], key=lambda zz: len(zz), reverse=True)
@@ -566,45 +543,6 @@ vendorApprovedList = [
 
 #--------------------------------------------------------------
 #--------------------------------------------------------------
-
-#--------------------------------------------------------------
-#Australia-formatted form factors:
-
-#This set of lists assumes that first list (list of lists  and the second one...the approvedList are in synch with each other
-#    if something is found in one of the lists in the first table then we will use the
-#    entry in approvedList which is in the same index of the first one
-ffList =[
-['aio','all-in-one','allinone','all in one'],
-['medium form factor','medium form','mff','medium-form-factor'],
-['micro'],
-['mini','mini tower'],
-['small form factor','small form','sff','small-form factor','small-form-factor'],
-['ultra small','usff','ultra-small'],
-['CMT'],
-['USDT', 'ultra-slim-desktop','ultra-slim desktop','ultra slim desktop'],
-['thin client','thinclient'],
-['tiny']
-]
-#we want to sort ffList because for each entry in the ffList we want to compare with progressively larger strings.
-#The reason is that if Dell Inc. exists in the footprints extract..we want ot replace that and not Dell.
-for index1 in range(0,len(ffList)):
-    ffList[index1] = sorted(ffList[index1], key=lambda zz: len(zz), reverse=True)
-
-ffApprovedList = [
-'AIO',
-'MFF',
-'Micro',
-'Mini',
-'SFF',
-'USFF',
-'CMT',
-'USDT',
-'Thin Client',
-'Tiny'
-]
-
-#--------------------------------------------------------------
-#--------------------------------------------------------------
 '''
 #we want to sort these because for each entry in the vendorList we want to compare with progressively larger strings.
 #The reason is that if Dell Inc. exists in the footprints extract..we want ot replace that and not Dell.
@@ -622,6 +560,5 @@ writeTestListToCSV(footprintsExportList,'Footprints Export_Output.csv')
 '''
 storeCSVAsList("Footprints Export_Output.csv",footprintsExportList)
 processVendorHalf()
-processFFHalf()
-writeTestListToCSV(footprintsExportList,'Footprints Export_Output_1217_1946.csv')
+writeTestListToCSV(footprintsExportList,'Footprints Export_Output_1217.csv')
 print("end of program")

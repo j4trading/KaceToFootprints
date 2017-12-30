@@ -1,0 +1,7 @@
+Fri 12/29/2017, 10:00:06.05 
+ 
+net use yields this error: 
+
+copying file yields this error: 
+
+deleting net use yields this error: 

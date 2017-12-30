@@ -280,9 +280,6 @@ def processFFHalf():
                         ffInListOuterIndex = j
                         ffInListInnerIndex = k
                         break
-                    else:
-                        ffCFoundInList = 0
-                        
                 if substringPosition != -1:
                     break
 
